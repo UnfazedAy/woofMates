@@ -1,0 +1,46 @@
+{
+  "name": "woofmates_api",
+  "version": "1.0.0",
+  "description": "Woof mates is an online web application to connect dogs with other dogs either for breeding, playmates and so on based on the owner's choice.",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=production node index",
+    "dev": "NODE_ENV=development nodemon index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UnfazedAy/woofMates.git"
+  },
+  "keywords": [
+    "woofMates",
+    "woof",
+    "mates",
+    "Woof",
+    "Mates",
+    "woof_mates",
+    "Woof_Mates",
+    "WOOF",
+    "MATES"
+  ],
+  "author": "Ayomide Soniyi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/UnfazedAy/woofMates/issues"
+  },
+  "homepage": "https://github.com/UnfazedAy/woofMates#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^1.41.0",
+    "colors": "^1.4.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.6.3",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
