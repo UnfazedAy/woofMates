@@ -1,24 +1,23 @@
 import mongoose from "mongoose";
 import keys from "./keys.js";
 import logger from "../helpers/logger.js";
+import colors from "colors";
 
 const { MONGO_URI } = keys;
 
 const connectDB = async () => {
-    await mongoose.connect(MONGO_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    });
-    const database = mongoose.connection;
-    database.on('connected', async () => {
-        logger.info('MongoDB connected successfully ...');
-    });
-    database.on('error', (err) => {
-        logger.error(`MongoDB connection error: ${err}`);
-    });
-    database.on('disconnected', () => {
-        logger.info('MongoDB disconnected');
-    });
+    try {
+        const conn = await mongoose.connect(MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        const database = conn.connection.db.databaseName;
+        logger.info(`MongoDB connected: ${database}`.cyan.underline.bold);
+
+    } catch (error) {
+        logger.error(`Error: ${error.message}`.red.underline.bold);
+        process.exit(1);
+    }
 }
 
 export default connectDB;
