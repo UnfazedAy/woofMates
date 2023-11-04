@@ -1,7 +1,7 @@
 import NodeGeocoder from 'node-geocoder';
 import keys from '../config/keys.js';
 
-import { GEOCODER_PROVIDER, GEOCODER_API_KEY } from keys;
+const { GEOCODER_PROVIDER, GEOCODER_API_KEY } = keys;
 
 const options = {
   provider: GEOCODER_PROVIDER,
