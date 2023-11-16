@@ -2,6 +2,7 @@ import express from 'express';
 import keys from './config/keys.js';
 import connectDB from './config/db.js';
 import logger from './helpers/logger.js';
+// eslint-disable-next-line no-unused-vars
 import colors from 'colors';
 import morgan from 'morgan';
 import userRouter from './routes/users.js';
