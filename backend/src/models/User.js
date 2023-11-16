@@ -1,17 +1,18 @@
-import mongoose from "mongoose";
-import geocoder from "../helpers/geocoder.js";
-import logger from "../helpers/logger.js";
+/* eslint-disable no-invalid-this */
+import mongoose from 'mongoose';
+import geocoder from '../helpers/geocoder.js';
+import logger from '../helpers/logger.js';
 
 const UserSchema = new mongoose.Schema(
   {
     firstname: {
       type: String,
-      required: [true, "Please add a first name"],
+      required: [true, 'Please add a first name'],
       trim: true,
     },
     lastname: {
       type: String,
-      required: [true, "Please add a last name"],
+      required: [true, 'Please add a last name'],
       trim: true,
     },
     email: {
@@ -19,54 +20,54 @@ const UserSchema = new mongoose.Schema(
       required: true,
       match: [
         /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/,
-        "Please add a valid email",
+        'Please add a valid email',
       ],
       unique: true,
       trim: true,
     },
     username: {
       type: String,
-      required: [true, "Please add a username"],
+      required: [true, 'Please add a username'],
       unique: true,
       trim: true,
     },
     password: {
       type: String,
       minlength: 6,
-      required: [true, "Please add a password"],
+      required: [true, 'Please add a password'],
       select: false, // Hide password from query results
     },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     role: {
       type: String,
-      enum: ["user", "admin"],
-      default: "user",
+      enum: ['user', 'admin'],
+      default: 'user',
     },
     avatar: {
       type: String,
       default:
-        "https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=612x612&w=0&k=20&c=yBeyba0hUkh14_jgv1OKqIH0CCSWU_4ckRkAoy2p73o=",
+        'https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=612x612&w=0&k=20&c=yBeyba0hUkh14_jgv1OKqIH0CCSWU_4ckRkAoy2p73o=',
     },
     bio: {
       type: String,
-      default: "",
+      default: '',
     },
     address: {
       type: String,
-      required: [true, "Please add an address"],
+      required: [true, 'Please add an address'],
     },
     location: {
       // GeoJSON Point
       type: {
         type: String,
-        enum: ["Point"],
+        enum: ['Point'],
         // required: true,
       },
       coordinates: {
         type: [Number],
         // required: true,
-        index: "2dsphere",
+        index: '2dsphere',
       },
       formattedAddress: String,
       street: String,
@@ -78,7 +79,7 @@ const UserSchema = new mongoose.Schema(
     dogs: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Dog",
+        ref: 'Dog',
       },
     ],
   },
@@ -86,14 +87,14 @@ const UserSchema = new mongoose.Schema(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 // Geocoder and create location feild
-UserSchema.pre("save", async function (next) {
+UserSchema.pre('save', async function(next) {
   const loc = await geocoder.geocode(this.address);
   this.location = {
-    type: "Point",
+    type: 'Point',
     coordinates: [loc[0].latitude, loc[0].longitude],
     formattedAddress: loc[0].formattedAddress,
     street: loc[0].streetName,
@@ -110,13 +111,13 @@ UserSchema.pre("save", async function (next) {
 
 // Cascade delete dogs when a user is deleted
 UserSchema.pre(
-  "deleteOne",
+  'deleteOne',
   { document: true, query: false },
-  async function (next) {
+  async function(next) {
     logger.info(`Dogs being removed from user ${this._id}`);
-    await this.model("Dog").deleteMany({ user: this._id });
+    await this.model('Dog').deleteMany({ user: this._id });
     next();
-  }
+  },
 );
 
 // // Reverse populate with virtuals
@@ -128,4 +129,4 @@ UserSchema.pre(
 //   options: { sort: { createdAt: -1 } },
 // });
 
-export default mongoose.model("User", UserSchema);
+export default mongoose.model('User', UserSchema);
