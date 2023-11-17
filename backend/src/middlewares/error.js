@@ -26,6 +26,12 @@ const errorHandler = (err, req, res, next) => {
     error = new ErrorResponse(message, 400);
   }
 
+  // Multer file size error
+  if (err.name === 'MulterError') {
+    const message = 'File size too large';
+    error = new ErrorResponse(message, 400);
+  }
+
   res.status(error.statusCode || 500).json({
     success: false,
     error: error.message || 'Server Error',
