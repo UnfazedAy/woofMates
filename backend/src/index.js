@@ -7,7 +7,7 @@ import colors from 'colors';
 import morgan from 'morgan';
 import userRouter from './routes/users.js';
 import { upload } from './middlewares/multer.js';
-import errorHandler from './helpers/errorResponse.js';
+import errorHandler from './middlewares/error.js';
 
 const { PORT, HOST, NODE_ENV } = keys;
 

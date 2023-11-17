@@ -1,5 +1,5 @@
-import ErrorResponse from '../helpers/errorResponse';
-import logger from '../helpers/logger';
+import ErrorResponse from '../helpers/errorResponse.js';
+import logger from '../helpers/logger.js';
 
 const errorHandler = (err, req, res, next) => {
   let error = { ...err };
@@ -28,7 +28,7 @@ const errorHandler = (err, req, res, next) => {
 
   // Multer file size error
   if (err.name === 'MulterError') {
-    const message = 'File size too large';
+    const message = 'File size too large, file should not be more than 3MB';
     error = new ErrorResponse(message, 400);
   }
 
