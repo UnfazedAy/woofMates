@@ -6,19 +6,28 @@ import logger from './helpers/logger.js';
 import colors from 'colors';
 import morgan from 'morgan';
 import userRouter from './routes/users.js';
+import { upload } from './middlewares/multer.js';
+import errorHandler from './helpers/errorResponse.js';
 
 const { PORT, HOST, NODE_ENV } = keys;
 
 connectDB();
 const app = express();
 
+// Body parser
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(upload);
 
 if (NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+// Mount routers
 app.use('/api/v1/users', userRouter);
+
+// Error handler
+app.use(errorHandler);
 
 const server = app.listen(
   PORT,
