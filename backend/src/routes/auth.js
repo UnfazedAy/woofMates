@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { upload } from '../middlewares/multer.js';
-// import { protect } from '../middlewares/auth.js';
+import { protect } from '../middlewares/auth.js';
 import {
   register,
   getAllUsers,
@@ -17,7 +17,7 @@ userRouter
 
 userRouter
   .route('/:id')
-  .get(profile);
+  .get(protect, profile);
 
 // Add a new route for updating the avatar
 userRouter

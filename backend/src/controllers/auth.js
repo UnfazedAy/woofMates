@@ -54,6 +54,8 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
 });
 
 const profile = asyncHandler(async (req, res, next) => {
+  // const myUser = await User.findById(req.params.id);
+  // console.log(myUser);
   const user = await User.findById(req.user.id);
   if (!user) {
     return next(
