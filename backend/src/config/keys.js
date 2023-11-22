@@ -13,6 +13,9 @@ const keys = {
   NODE_ENV: process.env.NODE_ENV,
   GEOCODER_PROVIDER: process.env.GEOCODER_PROVIDER,
   GEOCODER_API_KEY: process.env.GEOCODER_API_KEY,
+  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+  JWT_COOKIE_EXPIRES_IN: process.env.JWT_COOKIE_EXPIRES_IN,
 };
 
 export default keys;
