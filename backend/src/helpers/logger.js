@@ -38,7 +38,7 @@ const logger = createLogger({
     format.colorize(),
     label({ label: 'Response =>' }),
     timestamp({ format: 'HH:mm:ss' }),
-    myFormat
+    myFormat,
   ),
   transports: [
     new transports.Console(options.console),

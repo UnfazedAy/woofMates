@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { upload } from '../middlewares/multer.js';
 import {
   createUser,
   getAllUsers,
@@ -20,6 +21,6 @@ userRouter
 // Add a new route for updating the avatar
 userRouter
   .route('/:id/avatar')
-  .put(updateAvatar);
+  .put(upload, updateAvatar);
 
 export default userRouter;
