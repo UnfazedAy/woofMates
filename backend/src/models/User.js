@@ -3,6 +3,10 @@ import mongoose from 'mongoose';
 import geocoder from '../helpers/geocoder.js';
 import logger from '../helpers/logger.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import keys from '../config/keys.js';
+
+const { JWT_SECRET, JWT_EXPIRES_IN } = keys;
 
 const UserSchema = new mongoose.Schema(
   {
@@ -131,6 +135,17 @@ UserSchema.pre('save', async function(next) {
 // Match user entered password to hashed password in DB
 UserSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Sign JWT and return token
+UserSchema.methods.getSignedJwtToken = function() {
+  return jwt.sign(
+    { id: this._id },
+    JWT_SECRET,
+    {
+      expiresIn: JWT_EXPIRES_IN,
+    },
+  );
 };
 
 // // Reverse populate with virtuals

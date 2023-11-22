@@ -1,22 +1,23 @@
 import { Router } from 'express';
 import { upload } from '../middlewares/multer.js';
+// import { protect } from '../middlewares/auth.js';
 import {
-  createUser,
+  register,
   getAllUsers,
-  getUser,
+  profile,
   updateAvatar,
-} from '../controllers/users.js';
+} from '../controllers/auth.js';
 
 const userRouter = new Router();
 
 userRouter
   .route('/')
-  .post(createUser)
+  .post(register)
   .get(getAllUsers);
 
 userRouter
   .route('/:id')
-  .get(getUser);
+  .get(profile);
 
 // Add a new route for updating the avatar
 userRouter
