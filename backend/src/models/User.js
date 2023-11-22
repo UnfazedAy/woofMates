@@ -2,6 +2,7 @@
 import mongoose from 'mongoose';
 import geocoder from '../helpers/geocoder.js';
 import logger from '../helpers/logger.js';
+import bcrypt from 'bcrypt';
 
 const UserSchema = new mongoose.Schema(
   {
@@ -119,6 +120,18 @@ UserSchema.pre(
     next();
   },
 );
+
+// Encrypt password using bcrypt
+UserSchema.pre('save', async function(next) {
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+// Match user entered password to hashed password in DB
+UserSchema.methods.matchPassword = async function(enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 // // Reverse populate with virtuals
 // UserSchema.virtual("dogs", {
