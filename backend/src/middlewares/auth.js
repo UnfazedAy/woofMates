@@ -30,8 +30,13 @@ const protect = asyncHandler(async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = await User.findById(decoded.id);
-    next();
   } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      return next(new ErrorResponse('Token expired', 401));
+    }
+    if (err.name === 'JsonWebTokenError') {
+      return next(new ErrorResponse('Invalid token', 401));
+    }
     return next(new ErrorResponse('Not authorized to access this route', 401));
   }
 });
