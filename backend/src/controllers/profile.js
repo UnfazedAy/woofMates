@@ -14,7 +14,7 @@ const userProfile = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     data: user,
-    message: 'User retrieved successfully',
+    message: 'User profile retrieved successfully',
   });
 });
 
