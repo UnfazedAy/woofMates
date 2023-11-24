@@ -18,21 +18,16 @@ const sendTokenResponse = (user, statusCode, res) => {
     options.secure = true;
   }
 
-  if (statusCode === 201) {
-    res.status(statusCode).cookie('token', token, options).json({
+  res
+    .status(statusCode)
+    .cookie('token', token, options)
+    .json({
       success: true,
       token,
       data: user,
-      message: 'User created successfully',
+      ...(statusCode === 201 && { message: 'User created successfully' }),
+      ...(statusCode === 200 && { message: 'User logged in successfully' }),
     });
-  } else if (statusCode === 200) {
-    res.status(statusCode).cookie('token', token, options).json({
-      success: true,
-      token,
-      data: user,
-      message: 'User logged in successfully',
-    });
-  }
 };
 
 const register = asyncHandler(async (req, res, next) => {
@@ -50,11 +45,16 @@ const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
   // Validate email and password
   if (!email || !password) {
-    return next(new ErrorResponse('Please provide an email and password', 400));
+    return next(
+      new ErrorResponse('Please provide an email and password', 400),
+    );
   }
+  // Check for user
   const user = await User.findOne({ email }).select('+password');
   if (!user) {
-    return next(new ErrorResponse('Invalid credentials', 401));
+    return next(
+      new ErrorResponse('Invalid credentials', 401),
+    );
   }
   const isMatch = await user.matchPassword(password);
   if (!isMatch) {
