@@ -4,9 +4,11 @@ import connectDB from './config/db.js';
 import logger from './helpers/logger.js';
 // eslint-disable-next-line no-unused-vars
 import colors from 'colors';
+import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import authRouter from './routes/auth.js';
 import userRouter from './routes/users.js';
+import profileRouter from './routes/profile.js';
 import errorHandler from './middlewares/error.js';
 
 const { PORT, HOST, NODE_ENV } = keys;
@@ -17,6 +19,7 @@ const app = express();
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 if (NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -25,6 +28,7 @@ if (NODE_ENV === 'development') {
 // Mount routers
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/profile', profileRouter);
 
 // Error handler
 app.use(errorHandler);

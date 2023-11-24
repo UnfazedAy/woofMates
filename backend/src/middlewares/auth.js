@@ -15,13 +15,10 @@ const protect = asyncHandler(async (req, res, next) => {
   ) {
     // Set token from Bearer token in header
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.token) {
+    // Set token from cookie
+    token = req.cookies.token;
   }
-  // Check if token exists and starts with Cookie
-  //   else if (req.cookies.token) {
-  //     // Set token from cookie
-  //     token = req.cookies.token;
-  //   }
-
   // Check if token exists
   if (!token) {
     return next(new ErrorResponse('Not authorized to access this route', 401));
@@ -30,6 +27,10 @@ const protect = asyncHandler(async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = await User.findById(decoded.id);
+    if (!req.user) {
+      return next(new ErrorResponse('User not found', 404));
+    }
+    next();
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
       return next(new ErrorResponse('Token expired', 401));
