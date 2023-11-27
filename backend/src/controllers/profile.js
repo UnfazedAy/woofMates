@@ -3,6 +3,7 @@ import ErrorResponse from '../helpers/errorResponse.js';
 import asyncHandler from 'express-async-handler';
 import { bufferToDataUri } from '../middlewares/multer.js';
 import uploader from '../helpers/cloudinary.js';
+import bcrypt from 'bcrypt';
 
 const userProfile = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id);
@@ -69,4 +70,55 @@ const updateAvatar = asyncHandler(async (req, res, next) => {
   }
 });
 
-export { userProfile, updateAvatar };
+const changePassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select('+password');
+  if (!user) {
+    return next(
+      new ErrorResponse(`User not found with id of ${req.user.id}`, 404),
+    );
+  }
+
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+
+  // Check if current password is correct
+  if (!currentPassword) {
+    return next(new ErrorResponse('Please provide your current password', 400));
+  }
+  // Check if new password is provided
+  if (!newPassword) {
+    return next(new ErrorResponse('Please provide a new password', 400));
+  }
+  // Check if confirm password is provided
+  if (!confirmPassword) {
+    return next(new ErrorResponse('Please confirm your new password', 400));
+  }
+  // Check if current password is correct
+  const isMatch = await user.matchPassword(currentPassword);
+  if (!isMatch) {
+    return next(new ErrorResponse('Password is incorrect', 401));
+  }
+  // Check if new password and confirm password match
+  if (newPassword !== confirmPassword) {
+    return next(
+      new ErrorResponse('New password and confirm password do not match', 400),
+    );
+  }
+
+  // Hash new password and save changes
+  const salt = await bcrypt.genSalt(10);
+  const userNewPassword = await bcrypt.hash(newPassword, salt);
+  const updateUserPassword = { password: userNewPassword };
+  await User.findByIdAndUpdate(
+    user.id, updateUserPassword, {
+      new: true,
+      runValidators: true,
+    });
+
+  // Respond with success message
+  res.status(200).json({
+    success: true,
+    message: 'Password updated successfully',
+  });
+});
+
+export { userProfile, updateAvatar, changePassword };
