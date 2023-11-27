@@ -31,7 +31,7 @@ const DogSchema = new mongoose.Schema(
     images: {
       type: [String],
       default: [],
-      min: [3, 'Please add at least 3 images'],
+      minLength: [3, 'Please add at least 3 images'],
     },
     relationship_preference: {
       type: String,

@@ -85,12 +85,20 @@ const changePassword = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Please provide your current password', 400));
   }
   // Check if new password is provided
-  if (!newPassword) {
-    return next(new ErrorResponse('Please provide a new password', 400));
+  if (!newPassword || newPassword.length < 6) {
+    return next(
+      new ErrorResponse(
+        'Please provide a new password of at least 6 characters', 400,
+      ),
+    );
   }
   // Check if confirm password is provided
-  if (!confirmPassword) {
-    return next(new ErrorResponse('Please confirm your new password', 400));
+  if (!confirmPassword || confirmPassword.length < 6) {
+    return next(
+      new ErrorResponse(
+        'Please provide a new password of at least 6 characters', 400,
+      ),
+    );
   }
   // Check if current password is correct
   const isMatch = await user.matchPassword(currentPassword);
