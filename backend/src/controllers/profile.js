@@ -21,7 +21,7 @@ const userProfile = asyncHandler(async (req, res, next) => {
 
 const updateAvatar = asyncHandler(async (req, res, next) => {
   try {
-    if (!req.file) {
+    if (!req.files) {
       return next(new ErrorResponse('Please upload a file', 400));
     }
 
@@ -33,7 +33,7 @@ const updateAvatar = asyncHandler(async (req, res, next) => {
     }
 
     // Extract file information
-    const { mimetype, buffer } = req.file;
+    const { mimetype, buffer } = req.files[0];
     const fileFormat = mimetype.split('/')[1];
     const file = bufferToDataUri(`.${fileFormat}`, buffer).content;
 
