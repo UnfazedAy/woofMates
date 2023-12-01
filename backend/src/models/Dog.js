@@ -28,16 +28,16 @@ const DogSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
-    dog_images: {
-      dog_image_1: {
+    dogImages: {
+      dogImage_1: {
         type: [String],
         required: [true, 'Please upload at least 3 dog images'],
       },
-      dog_image_2: {
+      dogImage_2: {
         type: [String],
         required: [true, 'Please upload at least 3 dog images'],
       },
-      dog_image_3: {
+      dogImage_3: {
         type: [String],
         required: [true, 'Please upload at least 3 dog images'],
       },
