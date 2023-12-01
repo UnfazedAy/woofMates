@@ -80,7 +80,7 @@ const changePassword = asyncHandler(async (req, res, next) => {
 
   const { currentPassword, newPassword, confirmPassword } = req.body;
 
-  // Check if current password is correct
+  // Check if current password is provided
   if (!currentPassword) {
     return next(new ErrorResponse('Please provide your current password', 400));
   }

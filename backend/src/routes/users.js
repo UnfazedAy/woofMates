@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import User from '../models/User.js';
+import advancedResults from '../middlewares/advancedResults.js';
 import {
   getAllUsers,
   getUser,
@@ -10,7 +12,7 @@ const userRouter = new Router();
 
 userRouter
   .route('/')
-  .get(getAllUsers);
+  .get(advancedResults(User), getAllUsers);
 
 userRouter
   .route('/:id')
