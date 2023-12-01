@@ -10,8 +10,12 @@ const advancedResults = (model, populate) => async (req, res, next) => {
 
   // Projection stage - to select specific fields
   if (req.query.select) {
-    const fields = req.query.select.split(',').join(' ');
-    pipeline.push({ $project: fields });
+    const fields = req.query.select.split(' ');
+    const projection = {};
+    fields.forEach((field) => {
+      projection[field] = 1;
+    });
+    pipeline.push({ $project: projection });
   }
 
   // Sort stage - to sort based on query params
