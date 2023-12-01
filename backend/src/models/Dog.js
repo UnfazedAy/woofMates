@@ -28,10 +28,19 @@ const DogSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
-    images: {
-      type: [String],
-      default: [],
-      minLength: [3, 'Please add at least 3 images'],
+    dog_images: {
+      dog_image_1: {
+        type: [String],
+        required: [true, 'Please upload at least 3 dog images'],
+      },
+      dog_image_2: {
+        type: [String],
+        required: [true, 'Please upload at least 3 dog images'],
+      },
+      dog_image_3: {
+        type: [String],
+        required: [true, 'Please upload at least 3 dog images'],
+      },
     },
     relationship_preference: {
       type: String,
