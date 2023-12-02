@@ -6,7 +6,7 @@ import uploader from '../helpers/cloudinary.js';
 import bcrypt from 'bcrypt';
 
 const userProfile = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user.id).populate('dogs');
   if (!user) {
     return next(
       new ErrorResponse(`User not found with id of ${req.user.id}`, 404),

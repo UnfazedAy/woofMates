@@ -9,6 +9,7 @@ import morgan from 'morgan';
 import authRouter from './routes/auth.js';
 import userRouter from './routes/users.js';
 import profileRouter from './routes/profile.js';
+import dogRouter from './routes/dogs.js';
 import errorHandler from './middlewares/error.js';
 
 const { PORT, HOST, NODE_ENV } = keys;
@@ -29,6 +30,7 @@ if (NODE_ENV === 'development') {
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/profile', profileRouter);
+app.use('/api/v1/dogs', dogRouter);
 
 // Error handler
 app.use(errorHandler);

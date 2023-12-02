@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
-import { relationshipsEnums, breedsEnum, gendersEnum } from '../helpers/enums';
+import {
+  relationshipsEnums, breedsEnum, gendersEnum,
+} from '../helpers/enums.js';
 
 const DogSchema = new mongoose.Schema(
   {

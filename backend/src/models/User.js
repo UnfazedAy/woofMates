@@ -81,12 +81,12 @@ const UserSchema = new mongoose.Schema(
       zipcode: String,
       country: String,
     },
-    dogs: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Dog',
-      },
-    ],
+    // dogs: [
+    //   {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Dog',
+    //   },
+    // ],
   },
   {
     timestamps: true,
@@ -152,12 +152,13 @@ UserSchema.methods.getSignedJwtToken = function() {
 };
 
 // // Reverse populate with virtuals
-// UserSchema.virtual("dogs", {
-//   ref: "Dog",
-//   localField: "_id",
-//   foreignField: "user",
-//   justOne: false,
-//   options: { sort: { createdAt: -1 } },
-// });
+UserSchema.virtual('dogs', {
+  ref: 'Dog',
+  localField: '_id',
+  foreignField: 'user',
+  justOne: false,
+  options: { sort: { createdAt: -1 } },
+});
+
 
 export default mongoose.model('User', UserSchema);
