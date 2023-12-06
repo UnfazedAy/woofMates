@@ -3,7 +3,6 @@ import ErrorResponse from '../helpers/errorResponse.js';
 import asyncHandler from 'express-async-handler';
 import { bufferToDataUri } from '../middlewares/multer.js';
 import uploader from '../helpers/cloudinary.js';
-import bcrypt from 'bcrypt';
 
 const userProfile = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id).populate('dogs');
@@ -112,15 +111,9 @@ const changePassword = asyncHandler(async (req, res, next) => {
     );
   }
 
-  // Hash new password and save changes
-  const salt = await bcrypt.genSalt(10);
-  const userNewPassword = await bcrypt.hash(newPassword, salt);
-  const updateUserPassword = { password: userNewPassword };
-  await User.findByIdAndUpdate(
-    user.id, updateUserPassword, {
-      new: true,
-      runValidators: true,
-    });
+  // Update user's password and save changes
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
 
   // Respond with success message
   res.status(200).json({
