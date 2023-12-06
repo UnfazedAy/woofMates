@@ -81,12 +81,6 @@ const UserSchema = new mongoose.Schema(
       zipcode: String,
       country: String,
     },
-    // dogs: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Dog',
-    //   },
-    // ],
   },
   {
     timestamps: true,
@@ -97,6 +91,9 @@ const UserSchema = new mongoose.Schema(
 
 // Geocoder and create location feild
 UserSchema.pre('save', async function(next) {
+  if (!this.isModified('address')) {
+    return next();
+  }
   const loc = await geocoder.geocode(this.address);
   this.location = {
     type: 'Point',
@@ -151,11 +148,11 @@ UserSchema.methods.getSignedJwtToken = function() {
   );
 };
 
-// // Reverse populate with virtuals
+// Reverse populate with virtuals
 UserSchema.virtual('dogs', {
   ref: 'Dog',
   localField: '_id',
-  foreignField: 'user',
+  foreignField: 'owner',
   justOne: false,
   options: { sort: { createdAt: -1 } },
 });
