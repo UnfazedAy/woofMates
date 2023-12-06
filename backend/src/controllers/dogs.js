@@ -1,4 +1,5 @@
 import asyncHandler from 'express-async-handler';
+import User from '../models/User.js';
 import Dog from '../models/Dog.js';
 import uploader from '../helpers/cloudinary.js';
 import ErrorResponse from '../helpers/errorResponse.js';
@@ -11,6 +12,18 @@ const createUserDog = asyncHandler(async (req, res, next) => {
   const dogImages = req.files.filter(
     (file) => file.fieldname === 'dogImages',
   );
+  // check for existing dogs
+  const existingDog = await Dog.findOne({
+    name: req.body.name,
+    gender: req.body.gender,
+    breed: req.body.breed,
+    age: req.body.age,
+    owner: req.user._id,
+    relationship_preference: req.body.relationship_preference,
+  });
+  if (existingDog) {
+    return next(new ErrorResponse('Dog already exists', 400));
+  }
   const dogImagesUrls = [];
   for (const image of dogImages) {
     const { mimetype, buffer } = image;
@@ -42,10 +55,13 @@ const createUserDog = asyncHandler(async (req, res, next) => {
     },
     relationship_preference: req.body.relationship_preference,
   };
-  const dog = await Dog.create(dogData);
+  const newDog = await Dog.create(dogData);
+  // Fetch the updated user with the populated 'dogs' field
+  const updatedUser = await User.findById(req.user._id).populate('dogs');
   res.status(201).json({
     success: true,
-    data: dog,
+    data: newDog,
+    userWithDogs: updatedUser,
     message: 'Dog created successfully',
   });
 });
