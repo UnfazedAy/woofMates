@@ -117,7 +117,7 @@ UserSchema.pre(
   { document: true, query: false },
   async function(next) {
     logger.info(`Dogs being removed from user ${this._id}`);
-    await this.model('Dog').deleteMany({ user: this._id });
+    await this.model('Dog').deleteMany({ owner: this._id });
     next();
   },
 );
@@ -156,6 +156,5 @@ UserSchema.virtual('dogs', {
   justOne: false,
   options: { sort: { createdAt: -1 } },
 });
-
 
 export default mongoose.model('User', UserSchema);

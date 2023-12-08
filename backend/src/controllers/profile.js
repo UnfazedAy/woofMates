@@ -104,6 +104,14 @@ const changePassword = asyncHandler(async (req, res, next) => {
   if (!isMatch) {
     return next(new ErrorResponse('Password is incorrect', 401));
   }
+  // Check if new password is the same as current password
+  if (currentPassword === newPassword) {
+    return next(
+      new ErrorResponse(
+        'New password cannot be the same as current password', 400,
+      ),
+    );
+  }
   // Check if new password and confirm password match
   if (newPassword !== confirmPassword) {
     return next(

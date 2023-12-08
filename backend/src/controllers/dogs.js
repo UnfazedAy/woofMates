@@ -9,9 +9,7 @@ const createUserDog = asyncHandler(async (req, res, next) => {
   if (!req.files || Object.keys(req.files).length < 3) {
     return next(new ErrorResponse('Please upload at least 3 dog images', 400));
   }
-  const dogImages = req.files.filter(
-    (file) => file.fieldname === 'dogImages',
-  );
+  const dogImages = req.files.filter((file) => file.fieldname === 'dogImages');
   // check for existing dogs
   const existingDog = await Dog.findOne({
     name: req.body.name,
@@ -66,4 +64,53 @@ const createUserDog = asyncHandler(async (req, res, next) => {
   });
 });
 
-export { createUserDog };
+const getDogs = asyncHandler(async (req, res, next) => {
+  res.status(200).json({
+    ...res.advancedResults,
+    message: 'Dog(s) retrieved successfully',
+  });
+});
+
+const getDog = asyncHandler(async (req, res, next) => {
+  const dog = await Dog.findById(req.params.id);
+  if (!dog) {
+    return next(new ErrorResponse('Dog not found', 404));
+  }
+  res.status(200).json({
+    success: true,
+    data: dog,
+    message: 'Dog fetched successfully',
+  });
+});
+
+const getUsersDogs = asyncHandler(async (req, res, next) => {
+  const dogs = await Dog.find({ owner: req.params.id });
+  res.status(200).json({
+    success: true,
+    data: dogs,
+    message: 'Dogs fetched successfully',
+  });
+});
+
+const deleteDog = asyncHandler(async (req, res, next) => {
+  const dog = await Dog.findById(req.params.id);
+  if (!dog) {
+    return next(new ErrorResponse('Dog not found', 404));
+  }
+  if (
+    dog.owner.toString() !== req.user._id.toString() &&
+    req.user.role !== 'admin'
+  ) {
+    return next(
+      new ErrorResponse('You are not authorized to delete this dog', 401),
+    );
+  }
+  await dog.deleteOne();
+  res.status(200).json({
+    success: true,
+    data: {},
+    message: 'Dog deleted successfully',
+  });
+});
+
+export { createUserDog, getDogs, getDog, deleteDog, getUsersDogs };
