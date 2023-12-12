@@ -5,7 +5,7 @@ import keys from '../config/keys.js';
 
 const { JWT_COOKIE_EXPIRES_IN, NODE_ENV } = keys;
 
-const sendTokenResponse = (user, statusCode, res) => {
+const sendTokenResponse = (user, statusCode, res, message) => {
   const token = user.getSignedJwtToken();
   const options = {
     expires: new Date(
@@ -25,8 +25,7 @@ const sendTokenResponse = (user, statusCode, res) => {
       success: true,
       token,
       data: user,
-      ...(statusCode === 201 && { message: 'User created successfully' }),
-      ...(statusCode === 200 && { message: 'User logged in successfully' }),
+      message,
     });
 };
 
@@ -37,7 +36,7 @@ const register = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Email already exists', 400));
   }
   const user = await User.create(req.body);
-  sendTokenResponse(user, 201, res);
+  sendTokenResponse(user, 201, res, 'User created successfully');
   next();
 });
 
@@ -60,7 +59,7 @@ const login = asyncHandler(async (req, res, next) => {
   if (!isMatch) {
     return next(new ErrorResponse('Invalid credentials', 401));
   }
-  sendTokenResponse(user, 200, res);
+  sendTokenResponse(user, 200, res, 'User logged in successfully');
 });
 
-export { register, login };
+export { register, login, sendTokenResponse };

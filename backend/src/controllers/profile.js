@@ -3,6 +3,7 @@ import ErrorResponse from '../helpers/errorResponse.js';
 import asyncHandler from 'express-async-handler';
 import { bufferToDataUri } from '../middlewares/multer.js';
 import uploader from '../helpers/cloudinary.js';
+import { sendTokenResponse } from './auth.js';
 
 const userProfile = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id).populate('dogs');
@@ -123,11 +124,8 @@ const changePassword = asyncHandler(async (req, res, next) => {
   user.password = newPassword;
   await user.save({ validateBeforeSave: false });
 
-  // Respond with success message
-  res.status(200).json({
-    success: true,
-    message: 'Password updated successfully',
-  });
+  // Respond with success message and updated user data
+  sendTokenResponse(user, 200, res, 'Password changed successfully');
 });
 
 export { userProfile, updateAvatar, changePassword };
