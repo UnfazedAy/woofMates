@@ -9,6 +9,7 @@ import {
   getDogs,
   deleteDog,
   getUsersDogs,
+  updateDog,
 } from '../controllers/dogs.js';
 
 const dogRouter = new Router();
@@ -21,7 +22,8 @@ dogRouter
 dogRouter
   .route('/:id')
   .get(getDog)
-  .delete(protect, deleteDog);
+  .delete(protect, deleteDog)
+  .put(upload, protect, updateDog);
 
 dogRouter
   .route('/user/:id')

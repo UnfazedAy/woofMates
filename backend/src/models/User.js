@@ -62,6 +62,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Please add an address'],
     },
+    phone: {
+      type: String,
+      default: '',
+    },
     location: {
       // GeoJSON Point
       type: {

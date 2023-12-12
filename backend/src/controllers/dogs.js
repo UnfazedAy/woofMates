@@ -47,9 +47,9 @@ const createUserDog = asyncHandler(async (req, res, next) => {
     owner: req.user._id,
     bio: req.body.bio,
     dogImages: {
-      dogImage_1: dogImagesUrls[0],
-      dogImage_2: dogImagesUrls[1],
-      dogImage_3: dogImagesUrls[2],
+      dogImage1: dogImagesUrls[0],
+      dogImage2: dogImagesUrls[1],
+      dogImage3: dogImagesUrls[2],
     },
     relationship_preference: req.body.relationship_preference,
   };
@@ -113,4 +113,71 @@ const deleteDog = asyncHandler(async (req, res, next) => {
   });
 });
 
-export { createUserDog, getDogs, getDog, deleteDog, getUsersDogs };
+const updateDog = asyncHandler(async (req, res, next) => {
+  const allowedFieldsToUpdate = [
+    'name',
+    'gender',
+    'breed',
+    'age',
+    'bio',
+    'dogImage1',
+    'dogImage2',
+    'dogImage3',
+    'relationship_preference',
+  ];
+  const updates = req.body;
+  const { id } = req.params;
+  const updatedDog = await Dog.findById(id);
+  // Make sure dog exists
+  if (!updatedDog) {
+    return next(new ErrorResponse('Dog not found', 404));
+  }
+  // Make sure user is updating their own dog
+  if (
+    updatedDog.owner.toString() !== req.user._id.toString() &&
+    req.user.role !== 'admin'
+  ) {
+    return next(
+      new ErrorResponse('You are not authorized to update this dog', 401),
+    );
+  }
+  // Filter and update allowed fields
+  const filteredUpdates = Object.keys(updates).filter((update) =>
+    allowedFieldsToUpdate.includes(update),
+  );
+  filteredUpdates.forEach((update) => {
+    updatedDog[update] = updates[update];
+  });
+
+  // Handle image update
+  if (req.files) {
+    const dogImages = req.files.filter((file) =>
+      ['dogImage1', 'dogImage2', 'dogImage3'].includes(file.fieldname),
+    );
+    if (dogImages.length > 0) {
+      const dogImage = dogImages[0];
+      const { mimetype, buffer } = dogImage;
+      const fieldname = dogImage.fieldname;
+      const fileFormat = mimetype.split('/')[1];
+      const file = bufferToDataUri(`.${fileFormat}`, buffer).content;
+      const imageUrl = await uploader(
+        file,
+        'woofMates Dogs',
+        req.user.email,
+        'dog',
+      );
+      if (!imageUrl) {
+        return next(new ErrorResponse('Error uploading image', 500));
+      }
+      updatedDog.dogImages[fieldname] = imageUrl;
+    }
+  }
+  await updatedDog.save();
+  res.status(200).json({
+    success: true,
+    data: updatedDog,
+    message: 'Dog updated successfully',
+  });
+});
+
+export { createUserDog, getDogs, getDog, deleteDog, getUsersDogs, updateDog };
