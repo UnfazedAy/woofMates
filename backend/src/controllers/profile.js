@@ -3,7 +3,7 @@ import ErrorResponse from '../helpers/errorResponse.js';
 import asyncHandler from 'express-async-handler';
 import { bufferToDataUri } from '../middlewares/multer.js';
 import uploader from '../helpers/cloudinary.js';
-import { sendTokenResponse } from './auth.js';
+import sendTokenResponse from '../helpers/authHelper.js';
 
 const userProfile = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id).populate('dogs');
