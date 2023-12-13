@@ -36,4 +36,8 @@ const login = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res, 'User logged in successfully');
 });
 
+const forgotPassword = asyncHandler(async (req, res, next) => {
+  
+});
+
 export { register, login, sendTokenResponse };

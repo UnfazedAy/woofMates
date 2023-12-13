@@ -8,8 +8,13 @@ import {
   updateUser,
   deleteUser,
 } from '../controllers/users.js';
+import { getUsersDogs } from '../controllers/dogs.js';
+
 
 const userRouter = new Router();
+
+// Re-route into other resource routers
+userRouter.use('/:userId/dogs', getUsersDogs);
 
 userRouter
   .route('/')

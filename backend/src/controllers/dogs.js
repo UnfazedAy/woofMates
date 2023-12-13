@@ -84,8 +84,12 @@ const getDog = asyncHandler(async (req, res, next) => {
 });
 
 const getUsersDogs = asyncHandler(async (req, res, next) => {
-  const dogs = await Dog.find({ owner: req.params.id });
-  res.status(200).json({
+  // req.query.owner = req.params.userId;
+  const dogs = await Dog.find({ owner: req.params.userId });
+  if (!dogs) {
+    return next(new ErrorResponse('User has no dogs', 404));
+  }
+  return res.status(200).json({
     success: true,
     data: dogs,
     message: 'Dogs fetched successfully',

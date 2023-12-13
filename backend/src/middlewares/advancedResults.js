@@ -1,70 +1,66 @@
 const advancedResults = (model, populate) => async (req, res, next) => {
-  // Pipeline stages
-  const pipeline = [];
-  // Match stage - to filter based on query params
-  const match = { ...req.query };
-  // Remove fields from query
+  let query;
+
+  // Copied request.query
+  const reqQuery = { ...req.query };
+
+  // Fields to exclude
   const removeFields = ['select', 'sort', 'page', 'limit'];
-  removeFields.forEach((param) => delete match[param]);
-  pipeline.push({ $match: match });
 
-  // Projection stage - to select specific fields
+  // Loop over removeFields and delete them from reqQuery
+  removeFields.forEach((param) => delete reqQuery[param]);
+
+  // Create query strings
+  let queryStr = JSON.stringify(reqQuery);
+
+  // Create operators ($gt, $gte, etc)
+  queryStr = queryStr.replace(
+    /\b(gt|gte|lt|lte|in)\b/g,
+    (match) => `$${match}`,
+  );
+
+  // Finding resources
+  query = model.find(JSON.parse(queryStr));
+
+  // Selct Feilds
   if (req.query.select) {
-    const fields = req.query.select.split(' ');
-    const projection = {};
-    fields.forEach((field) => {
-      projection[field] = 1;
-    });
-    pipeline.push({ $project: projection });
+    const fields = req.query.select.split(',').join(' ');
+    query = query.select(fields);
   }
 
-  // Sort stage - to sort based on query params
-  const sortCriteria = {};
+  // Sort
   if (req.query.sort) {
-    const sortBy = req.query.sort.split(',');
-    sortBy.forEach((criteria) => {
-      const [field, order] = criteria.split(':');
-      sortCriteria[field] = order === 'desc' ? -1 : 1;
-    });
-    pipeline.push({ $sort: sortCriteria });
+    const sortBy = req.query.sort.split(',').join(' ');
+    query = query.sort(sortBy);
   } else {
-    pipeline.push({ $sort: { createdAt: -1 } }); // Default sorting criteria
+    query = query.sort('-createdAt');
   }
 
-  // Pagination stage - to paginate based on query params
+  // Pagination
   const page = parseInt(req.query.page, 10) || 1;
-  const limit = parseInt(req.query.limit, 10) || 20;
+  const limit = parseInt(req.query.limit, 10) || 25;
   const startIndex = (page - 1) * limit;
-  pipeline.push({ $skip: startIndex });
-  pipeline.push({ $limit: limit });
+  const endIndex = page * limit;
+  const total = await model.countDocuments();
+
+  query = query.skip(startIndex).limit(limit);
 
   if (populate) {
-    pipeline.push(
-      {
-        $lookup:
-          {
-            from: populate.path,
-            localField: '_id',
-            foreignField: populate.field,
-            as: populate.as,
-          },
-      },
-    );
+    query = query.populate(populate);
   }
 
-  // Aggregate stage using the pipeline - to get total documents
-  const results = await model.aggregate(pipeline);
-  const total = await model.countDocuments(match);
+  // Executing query
+  const results = await query;
 
-  // Pagination results
+  // Pagination result
   const pagination = {};
-  const endIndex = startIndex + results.length;
   if (endIndex < total) {
     pagination.next = {
       page: page + 1,
       limit,
     };
   }
+
   if (startIndex > 0) {
     pagination.prev = {
       page: page - 1,
@@ -72,7 +68,6 @@ const advancedResults = (model, populate) => async (req, res, next) => {
     };
   }
 
-  // Setting the response data
   res.advancedResults = {
     success: true,
     count: results.length,

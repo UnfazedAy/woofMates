@@ -8,15 +8,21 @@ import {
   getDog,
   getDogs,
   deleteDog,
-  getUsersDogs,
+  // getUsersDogs,
   updateDog,
 } from '../controllers/dogs.js';
 
-const dogRouter = new Router();
+const dogRouter = new Router({ mergeParams: true });
+
+// dogRouter
+//   .route('/:userId')
+//   .get(getUsersDogs);
 
 dogRouter
   .route('/')
-  .get(advancedResults(Dog), getDogs)
+  .get(advancedResults(
+    Dog, { path: 'owner', select: 'username email' },
+  ), getDogs)
   .post(upload, protect, createUserDog);
 
 dogRouter
@@ -24,9 +30,5 @@ dogRouter
   .get(getDog)
   .delete(protect, deleteDog)
   .put(upload, protect, updateDog);
-
-dogRouter
-  .route('/user/:id')
-  .get(getUsersDogs);
 
 export default dogRouter;
