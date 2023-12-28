@@ -1,5 +1,10 @@
 import { Router } from 'express';
-import { register, login } from '../controllers/auth.js';
+import {
+  register,
+  login,
+  forgotPassword,
+  resetPassword,
+} from '../controllers/auth.js';
 
 const authRouter = new Router();
 
@@ -10,5 +15,13 @@ authRouter
 authRouter
   .route('/login')
   .post(login);
+
+authRouter
+  .route('/forgotpassword')
+  .post(forgotPassword);
+
+authRouter
+  .route('/resetpassword/:resettoken')
+  .put(resetPassword);
 
 export default authRouter;

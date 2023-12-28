@@ -84,7 +84,6 @@ const getDog = asyncHandler(async (req, res, next) => {
 });
 
 const getUsersDogs = asyncHandler(async (req, res, next) => {
-  // req.query.owner = req.params.userId;
   const dogs = await Dog.find({ owner: req.params.userId });
   if (!dogs) {
     return next(new ErrorResponse('User has no dogs', 404));

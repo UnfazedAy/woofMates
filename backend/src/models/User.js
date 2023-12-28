@@ -5,6 +5,7 @@ import logger from '../helpers/logger.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import keys from '../config/keys.js';
+import crypto from 'crypto';
 
 const { JWT_SECRET, JWT_EXPIRES_IN } = keys;
 
@@ -160,5 +161,16 @@ UserSchema.virtual('dogs', {
   justOne: false,
   options: { sort: { createdAt: -1 } },
 });
+
+UserSchema.methods.getResetPasswordToken = function() {
+  // Generate token, hash it and set to resetPasswordToken field
+  const resetToken = crypto.randomBytes(20).toString('hex');
+  this.resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+  this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+  return resetToken;
+};
 
 export default mongoose.model('User', UserSchema);
