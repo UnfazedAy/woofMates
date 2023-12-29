@@ -10,7 +10,9 @@ const getAllUsers = asyncHandler(async (req, res, next) => {
 });
 
 const getUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
+  const user = await User.findById(req.params.id).populate(
+    { path: 'dogs', select: 'name breed gender age' },
+  );
   if (!user) {
     return next(
       new ErrorResponse(`User not found with id of ${req.params.id}`, 404),
@@ -58,7 +60,7 @@ const updateUser = asyncHandler(async (req, res, next) => {
 });
 
 const deleteUser = asyncHandler(async (req, res, next) => {
-  let user = await User.findById(req.params.id);
+  const user = await User.findById(req.params.id);
   if (!user) {
     return next(
       new ErrorResponse(`User not found with id of ${req.params.id}`, 404),
@@ -73,7 +75,7 @@ const deleteUser = asyncHandler(async (req, res, next) => {
       ),
     );
   }
-  user = await User.deleteOne({ '_id': req.params.id });
+  await user.deleteOne();
   res.status(200).json({
     success: true,
     data: {},
