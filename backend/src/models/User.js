@@ -118,8 +118,7 @@ UserSchema.pre('save', async function(next) {
 
 // Cascade delete dogs when a user is deleted
 UserSchema.pre(
-  'deleteOne',
-  { document: true, query: false },
+  'deleteOne', { document: true, query: false },
   async function(next) {
     logger.info(`Dogs being removed from user ${this._id}`);
     await this.model('Dog').deleteMany({ owner: this._id });

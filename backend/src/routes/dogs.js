@@ -8,15 +8,11 @@ import {
   getDog,
   getDogs,
   deleteDog,
-  // getUsersDogs,
   updateDog,
 } from '../controllers/dogs.js';
 
-const dogRouter = new Router({ mergeParams: true });
 
-// dogRouter
-//   .route('/:userId')
-//   .get(getUsersDogs);
+const dogRouter = new Router({ mergeParams: true });
 
 dogRouter
   .route('/')
