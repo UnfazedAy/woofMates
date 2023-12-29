@@ -6,7 +6,7 @@ import ErrorResponse from '../helpers/errorResponse.js';
 import { bufferToDataUri } from '../middlewares/multer.js';
 
 const createUserDog = asyncHandler(async (req, res, next) => {
-  if (!req.files || Object.keys(req.files).length < 3) {
+  if (!req.files || req.files.length < 3) {
     return next(new ErrorResponse('Please upload at least 3 dog images', 400));
   }
   const dogImages = req.files.filter((file) => file.fieldname === 'dogImages');
@@ -55,7 +55,9 @@ const createUserDog = asyncHandler(async (req, res, next) => {
   };
   const newDog = await Dog.create(dogData);
   // Fetch the updated user with the populated 'dogs' field
-  const updatedUser = await User.findById(req.user._id).populate('dogs');
+  const updatedUser = await User.findById(req.user._id).select(
+    'username email',
+  );
   res.status(201).json({
     success: true,
     data: newDog,
