@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import asyncHandler from 'express-async-handler';
 import User from '../models/User.js';
 import Dog from '../models/Dog.js';
@@ -185,4 +186,97 @@ const updateDog = asyncHandler(async (req, res, next) => {
   });
 });
 
-export { createUserDog, getDogs, getDog, deleteDog, getUsersDogs, updateDog };
+const getDogsByDistance = asyncHandler(async (req, res, next) => {
+  const { distance, lat, lng } = req.params;
+  const dogs = await Dog.find({
+    location: {
+      $near: {
+        $maxDistance: distance,
+        $geometry: {
+          type: 'Point',
+          coordinates: [lng, lat],
+        },
+      },
+    },
+  });
+  if (!dogs) {
+    return next(new ErrorResponse('No dogs found', 404));
+  }
+  res.status(200).json({
+    success: true,
+    data: dogs,
+    message: 'Dogs fetched successfully',
+  });
+});
+
+const filterDogsMatch = asyncHandler(async (req, res, next) => {
+  const {
+    breed,
+    age,
+    city,
+    state,
+    relationship_preference,
+    gender,
+  } = req.query;
+
+  const userId = req.user._id;
+
+  // Checks if no filters were provided and if not,
+  // returns all dogs except the user's dogs
+  if (
+    !breed &&
+    !age &&
+    !city &&
+    !state &&
+    !relationship_preference &&
+    !gender
+  ) {
+    const dogs = await Dog.find({ owner: { $ne: userId } });
+    if (!dogs || dogs.length === 0) {
+      return next(new ErrorResponse('No dogs found', 404));
+    }
+  }
+
+  const query = { owner: { $ne: userId } };
+
+  // Build the query dynamically based on the available filters
+  Object.entries({
+    breed,
+    age,
+    city,
+    state,
+    relationship_preference,
+    gender,
+  }).forEach(([key, value]) => {
+    if (value !== undefined) {
+      query[key] = value;
+    }
+  });
+
+  if (relationship_preference === 'Breeding Partner' && gender) {
+    query.gender = { $ne: gender };
+  }
+
+  const dogs = await Dog.find(query);
+  if (!dogs || dogs.length === 0) {
+    return next(new ErrorResponse('No dogs found', 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: dogs,
+    message: 'Dogs matches fetched successfully',
+  });
+});
+
+
+export {
+  createUserDog,
+  getDogs,
+  getDog,
+  deleteDog,
+  getUsersDogs,
+  updateDog,
+  getDogsByDistance,
+  filterDogsMatch,
+};

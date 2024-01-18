@@ -9,6 +9,7 @@ import {
   getDogs,
   deleteDog,
   updateDog,
+  filterDogsMatch,
 } from '../controllers/dogs.js';
 
 
@@ -20,6 +21,10 @@ dogRouter
     Dog, { path: 'owner', select: 'username email' },
   ), getDogs)
   .post(upload, protect, createUserDog);
+
+dogRouter
+  .route('/match')
+  .get(protect, filterDogsMatch);
 
 dogRouter
   .route('/:id')
