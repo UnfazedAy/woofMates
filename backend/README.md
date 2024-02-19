@@ -44,7 +44,7 @@ Validates the user credential and match the password entered with the password i
 ```json
 {
     "email": "emperorlambda@gmail.com",
-    "password": "Temitayo061199"
+    "password": "12345"
 }
 ```
 
@@ -198,8 +198,8 @@ A route to change a logged in user's password. It takes in the currentPassword, 
 ```json
 {
     "currentPassword": "the_fucking_boss",
-    "newPassword": "Temitayo061199",
-    "confirmPassword": "Temitayo061199"
+    "newPassword": "12345",
+    "confirmPassword": "12345"
 }
 ```
 
